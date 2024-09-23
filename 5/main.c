@@ -11,7 +11,7 @@
 #include <string.h>
 
 #define MAX_PLAYERS 10
-#define SHM_SIZE sizeof(int) * 3 * MAX_PLAYERS
+#define SHM_SIZE sizeof(TournamentData)
 
 enum sign {
     ROCK,
