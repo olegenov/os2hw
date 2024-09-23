@@ -1,0 +1,3 @@
+/Users/olegenov/Dev/os2hw/5/cmake-build-debug/CMakeFiles/5.dir
+/Users/olegenov/Dev/os2hw/5/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/olegenov/Dev/os2hw/5/cmake-build-debug/CMakeFiles/rebuild_cache.dir
