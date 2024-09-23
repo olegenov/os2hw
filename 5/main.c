@@ -10,7 +10,7 @@
 #include <time.h>
 #include <string.h>
 
-#define MAX_PLAYERS 10
+#define MAX_PLAYERS 3
 #define SHM_SIZE sizeof(TournamentData)
 
 enum sign {
@@ -73,7 +73,7 @@ int get_random_choice() {
 
 void play_game(int player_id, TournamentData *data, sem_t *sem) {
     for (int opponent_id = 0; opponent_id < MAX_PLAYERS; opponent_id++) {
-        if (opponent_id != player_id && data->played[player_id][opponent_id] == 0 && data->played[opponent_id][player_id] == 0) {
+        if (opponent_id != player_id) {
             sleep(1);
             int choice1 = get_random_choice();
             int choice2 = get_random_choice();
@@ -81,6 +81,11 @@ void play_game(int player_id, TournamentData *data, sem_t *sem) {
             int result = battle(choice1, choice2);
 
             sem_wait(sem);
+
+            if (data->played[player_id][opponent_id] != 0 || data->played[opponent_id][player_id] != 0) {
+                sem_post(sem);
+                return;
+            }
 
             data->played[player_id][opponent_id] = 1;
             data->played[opponent_id][player_id] = 1;
@@ -108,7 +113,7 @@ void play_game(int player_id, TournamentData *data, sem_t *sem) {
 
 int main() {
     signal(SIGINT, handle_signal);
-    srand(time(NULL));
+    srand(time(NULL) ^ getpid());
 
     int shm_fd = shm_open("/tournament_shm", O_CREAT | O_RDWR, 0666);
 
@@ -143,6 +148,7 @@ int main() {
     for (int i = 0; i < MAX_PLAYERS; i++) {
         pids[i] = fork();
         if (pids[i] == 0) {
+            srand(time(NULL) ^ getpid());
             play_game(i, data, sem);
             exit(0);
         }
